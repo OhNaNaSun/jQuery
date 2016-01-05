@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>测试noConflict效果</title>
+    <script src="jquery.js"></script>
+</head>
+<body>
+<div id="aaron">测试noConflict效果</div>
+
+<script type="text/javascript">
+
+    $("#aaron").click(function() {
+
+        $.noConflict(); //让出控制权
+//        $.noConflict(true); //window.$,window.jQuery让出控制权
+        if (!$) {
+            show("使用noConflict后，$不存在")
+            console.log("使用noConflict后，$不存在")
+        }
+
+        if (jQuery) {
+            show("使用noConflict后，jQuery存在")
+        }
+
+        //通过闭包隔离出$
+        (function($) {
+            if ($) {
+                show("通过闭包隔离后，转为局部变量$存在")
+            }
+        })(jQuery);
+
+    })
+
+    function show(data) {
+        jQuery("body").append('<li>' + data + '</li>')
+    }
+
+</script>
+</body>
+</html>

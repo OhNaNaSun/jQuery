@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    (function(window, factory){
+        factory(window);
+    }(this, function(){
+        var jQuery = function(selector, context){
+            return new jQuery.fn.init( selector, context );
+        }
+        jQuery.fn.init = function(selector, context){
+
+        }
+        return jQuery;
+    }))
+
+    /*var factory = function(){
+        return function(){
+            //执行方法
+            console.log("我执行啦！");
+        }
+    };
+    var jQuery = factory();
+    jQuery();*/
+    (function(window, undefined){
+        var jQuery = function(){};
+        var a = 1;
+        //在外面都是找不到的
+        //变成局部的，防止冲突
+        window.jQuery = window.$ = jQuery;//对外提交接口
+        //(21,90)定义了一些变量和函数 jQuery = function(){}
+        //(9181)window.jQuery = window.$ = jQuery
+        //(91,175)给jq对象添加方法和属性（JQ是基于面向对象的程序）
+        jQuery = function( selector, context ) {
+            return new jQuery.fn.init( selector, context );
+        };
+        //jQuery返回的是个对象，所以我们可以这样调用
+        $("#div1").css();
+        //(175,240)extend:jQ的继承方法
+        //(240，527)jQuery.extend:扩展一些工具方法
+        //jQuery提供两种工具方法
+        $().css();//实例方法
+        $.trim()//$就是函数，静态方法-》工具方法
+        //(848,2594)Sizzle,复杂选择器的实现
+        //(3039,3203)Callbacks,回调对象：对函数的统一管理
+        //(3204,3344)Deferred,延迟对象：对异步的统一管理
+        //(6881,6907)support,功能检测
+        //(3682,3853)data,数据缓存
+        $("#div1").data('name','hello');
+        $("#div1").data('name');//hello
+        //(3856,3987)queue,队列管理
+        //(6913,7444)attr(),prop(),val()，对元素属性的操作
+        //(4033,4884)on(),trigger()事件操作的相关方法
+        //(4886,5448)DOM操作
+        //(5450,6229)css:针对样式的操作
+        //(7486,8880)css:提交的数据和ajax(),ajax(),load(),getJson()
+        //(6234,6879)animate():运动的方法
+        //(8894,9193)offset():位置与尺寸的方法
+        //(16,34)JQ支持模块化
+
+    })(window)
+</script>
+</body>
+</html>
