@@ -2,40 +2,91 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>测试noConflict效果</title>
-    <script src="jquery.js"></script>
+    <title>jQuery</title>
+    <!--<script src="jquery.js"></script>-->
 </head>
 <body>
-<div id="aaron">测试noConflict效果</div>
+<div id="aaron">jQuery</div>
 
 <script type="text/javascript">
 
-    $("#aaron").click(function() {
-
-        $.noConflict(); //让出控制权
-//        $.noConflict(true); //window.$,window.jQuery让出控制权
-        if (!$) {
-            show("使用noConflict后，$不存在")
-            console.log("使用noConflict后，$不存在")
+    /*(function(window, factory){
+        factory(window);
+    }(typeof window !== undefined ? window : this, function(window, noGlobal){
+        var $jQuery = function(selector, context){
+            return new $jQuery.fn.init( selector, context );
         }
-
-        if (jQuery) {
-            show("使用noConflict后，jQuery存在")
+        $jQuery.fn = $jQuery.prototype = {
+            init: function(){
+                this.name = "aa";
+                return this;
+            },
+            constructor: $jQuery
         }
-
-        //通过闭包隔离出$
-        (function($) {
-            if ($) {
-                show("通过闭包隔离后，转为局部变量$存在")
-            }
-        })(jQuery);
-
-    })
-
+        if(typeof noGlobal === "undefined"){
+            window.$jQuery = $jQuery;
+        }
+        return $jQuery;
+    }))
+    var a = $jQuery();
+    show(a.name);
     function show(data) {
         jQuery("body").append('<li>' + data + '</li>')
+    }*/
+
+    /*var $$ = ajQuery = function(selector) {
+        this.selector = selector;
+        return this
+    }
+    ajQuery.fn = ajQuery.prototype = {
+        selectorName:function(){
+            return this.selector;
+        },
+        constructor: ajQuery
+    }
+    var a = new $$('aaa');  //实例化
+    console.log(a);
+    var name =  a.selectorName();//aaa //得到选择器名字
+    console.log(name);*/
+    //改进，去掉new
+    /*var $$ = ajQuery = function(selector) {
+        console.log(this);
+        if(!(this instanceof ajQuery)){
+            return new ajQuery(selector);
+        }
+        this.selector = selector;
+        return this;
+    }
+    ajQuery.fn = ajQuery.prototype = {
+        selectorName:function(){
+            return this.selector;
+        },
+        constructor: ajQuery
+    }
+    var a = $$('aaa');  //实例化
+    console.log(a);
+    var name =  a.selectorName();//aaa //得到选择器名字
+    console.log(name);*/
+    var $$ = ajQuery = function(selector) {
+        //把原型上的init作为构造器
+        return new ajQuery.fn.init( selector );
     }
 
+    ajQuery.fn = ajQuery.prototype = {
+        name: 'aaron',
+        init: function(selector) {
+            console.log(this);
+            this.selector = selector;
+        },
+        selectorName:function(){
+            return this.selector;
+        },
+        constructor: ajQuery
+    }
+    var a = $$('aaa');  //实例化
+    console.log(a)
+    var name =  a.selectorName();//aaa //得到选择器名字
+//    console.log(name);
 </script>
 </body>
 </html>
