@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>方法的链式调用</title>
+    <script src="jquery.js"></script>
+</head>
+<body>
+    <div id="Odiv">
+        ooooo
+    </div>
+
+<script>
+    /*$.extend({
+        fn1: function(){
+            console.log("fn1");
+        }
+    });
+    $.fn1();//fn1，加的实例方法
+    $.fn.extend({
+        fn2: function(){
+            console.log("fn2");
+        }
+    });
+    var div = $("#Odiv");
+    div.fn2();//fn2，加的静态方法*/
+
+    var $$ = ajQuery = function(selector) {
+        //把原型上的init作为构造器
+        return new ajQuery.fn.init( selector );
+    }
+    ajQuery.fn = ajQuery.prototype = {
+        name: 'aaron',
+        init: function(selector) {
+            this.selector = selector;
+            return this;
+        },
+        constructor: ajQuery
+    }
+    ajQuery.fn.init.prototype = ajQuery.fn;
+//    ajQuery.fn.foo = function () { alert("foo!"); };
+//    ajQuery(".some-selector").foo();
+    //挂在ajQuery.fn上的实例方法变成了ajQuery(ajQuery.fn.init)上的原型方法
+    ajQuery.extend = ajQuery.fn.extend = function() {
+        var options, src, copy,
+                target = arguments[0] || {},
+                i = 1,
+                length = arguments.length;
+
+        //只有一个参数，就是对jQuery自身的扩展处理
+        //extend,fn.extend
+        if (i === length) {
+            target = this; //调用的上下文对象jQuery/或者实例
+            i--;
+        }
+        for (; i < length; i++) {
+            //从i开始取参数,不为空开始遍历
+            if ((options = arguments[i]) != null) {
+                for (name in options) {
+                    copy = options[name];
+                    //覆盖拷贝
+                    target[name] = copy;
+                }
+            }
+        }
+        return target;
+    }
+    ajQuery.extend({
+        fn1: function(){
+            console.log("fn1");
+        }
+    });
+    var some1 = ajQuery(".some-selector");
+    ajQuery.fn1();
+
+    ajQuery.fn.extend({
+        fn2: function(){
+            console.log("fn2");
+        },
+        fn22: function(){
+            console.log("fn22");
+        }
+    });
+    some1.fn2();
+</script>
+</body>
+</html>
