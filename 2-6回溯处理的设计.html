@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <script src="jquery.js"></script>
+</head>
+<body>
+<ul id="ul" class="first">
+    <li class="foo">foooooo</li>
+    <li class="bar">barrrr</li>
+</ul>
+<script>
+    console.log($("#ul"));
+    $('ul.first').find('.foo').css('background-color', 'red').end().find('.bar').css('background-color', 'green');
+</script>
+</body>
+</html>
