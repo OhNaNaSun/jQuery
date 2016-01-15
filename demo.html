@@ -3,90 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <title>jQuery</title>
-    <!--<script src="jquery.js"></script>-->
+    <script src="jquery.js"></script>
 </head>
 <body>
 <div id="aaron">jQuery</div>
-
+<li></li>
+<li></li>
+<li></li>
 <script type="text/javascript">
-
-    /*(function(window, factory){
-        factory(window);
-    }(typeof window !== undefined ? window : this, function(window, noGlobal){
-        var $jQuery = function(selector, context){
-            return new $jQuery.fn.init( selector, context );
-        }
-        $jQuery.fn = $jQuery.prototype = {
-            init: function(){
-                this.name = "aa";
-                return this;
-            },
-            constructor: $jQuery
-        }
-        if(typeof noGlobal === "undefined"){
-            window.$jQuery = $jQuery;
-        }
-        return $jQuery;
-    }))
-    var a = $jQuery();
-    show(a.name);
-    function show(data) {
-        jQuery("body").append('<li>' + data + '</li>')
-    }*/
-
-    /*var $$ = ajQuery = function(selector) {
-        this.selector = selector;
-        return this
+    /*function Aaron(List, callback) {
+        setTimeout(function() {
+            var task;
+            if (task = List.shift()) {
+                task(); //执行函数
+            }
+            if (List.length > 0) { //递归分解
+                //callee 是 arguments 对象的属性。在该函数的函数体内，它可以指向当前正在执行的函数。
+                // 当函数是匿名函数时，这是很有用的， 比如匿名函数，这里就是。
+                arguments.callee(List)
+            } else {
+                callback()
+            }
+        }, 25)
     }
-    ajQuery.fn = ajQuery.prototype = {
-        selectorName:function(){
-            return this.selector;
+    Aaron([
+        function() {
+            alert('a')
         },
-        constructor: ajQuery
-    }
-    var a = new $$('aaa');  //实例化
-    console.log(a);
-    var name =  a.selectorName();//aaa //得到选择器名字
-    console.log(name);*/
-    //改进，去掉new
-    /*var $$ = ajQuery = function(selector) {
-        console.log(this);
-        if(!(this instanceof ajQuery)){
-            return new ajQuery(selector);
+        function() {
+            alert('b')
+        },
+        function() {
+            alert('c')
         }
-        this.selector = selector;
-        return this;
+    ], function() {
+        alert('callback')
+    });*/
+    function fn1(List, callback){
+        for(var i = 0; i< List.length; i++){
+            List[i]();
+        }
+        callback();
     }
-    ajQuery.fn = ajQuery.prototype = {
-        selectorName:function(){
-            return this.selector;
+    fn1([
+        function() {
+            for(var i = 0; i < 1000; i++){
+                console.log(i);
+            }
         },
-        constructor: ajQuery
-    }
-    var a = $$('aaa');  //实例化
-    console.log(a);
-    var name =  a.selectorName();//aaa //得到选择器名字
-    console.log(name);*/
-    var $$ = ajQuery = function(selector) {
-        //把原型上的init作为构造器
-        return new ajQuery.fn.init( selector );
-    }
-
-    ajQuery.fn = ajQuery.prototype = {
-        name: 'aaron',
-        init: function(selector) {
-            console.log(this);
-            this.selector = selector;
+        function() {
+            console.log('b');
         },
-        selectorName:function(){
-            return this.selector;
-        },
-        constructor: ajQuery
-    }
-    var a = $$('aaa');  //实例化
-    console.log(a)
-    var name =  a.selectorName();//aaa //得到选择器名字
-//    console.log(name);
+        function() {
+            console.log('c');
+        }
+    ],function(){
+        console.log("callback");
+    })
 </script>
 </body>
 </html>

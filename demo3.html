@@ -9,9 +9,11 @@
 <ul id="ul" class="first">
     <li class="foo">foooooo</li>
     <li class="bar">barrrr</li>
+    <li class="bar">barrrr22</li>
 </ul>
 <script>
-    console.log($("#ul"));
+    console.log($("li").get(0).innerHTML);//get:返回DOM对象
+    console.log($("li").eq(0));//返回jQuery对象
     $('ul.first').find('.foo').css('background-color', 'red').end().find('.bar').css('background-color', 'green');
 </script>
 </body>
