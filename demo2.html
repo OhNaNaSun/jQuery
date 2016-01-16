@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>分离构造器</title>
+</head>
+<body>
+
+<script>
+    var $$ = ajQuery = function(selector) {
+        //把原型上的init作为构造器
+        return new ajQuery.fn.init( selector );
+    }
+    ajQuery.fn = ajQuery.prototype = {
+        name: 'aaron',
+        init: function(selector) {
+            this.selector = selector;
+            return this;
+        },
+        constructor: ajQuery
+    }
+    ajQuery.fn.init.prototype = ajQuery.fn;
+    ajQuery.fn.foo = function () { alert("foo!"); };
+    ajQuery(".some-selector").foo();
+    //挂在ajQuery.fn上的实例方法变成了ajQuery(ajQuery.fn.init)上的原型方法
+
+</script>
+</body>
+</html>
