@@ -87,10 +87,10 @@ var
 	fcamelCase = function( all, letter ) {
 		return letter.toUpperCase();
 	};
-
+//添加实例属性和方法
 jQuery.fn = jQuery.prototype = {
 	// The current version of jQuery being used
-	jquery: version,
+	jquery: version,//$().jquery:"2.1.1"
 
 	constructor: jQuery,
 
@@ -118,8 +118,9 @@ jQuery.fn = jQuery.prototype = {
 
 	// Take an array of elements and push it onto the stack
 	// (returning the new matched element set)
+    //作用就通过新的DOM元素去创建一个新的jQuery对象
 	pushStack: function( elems ) {
-
+        //elems是DOM对象数组
 		// Build a new jQuery matched element set
 		var ret = jQuery.merge( this.constructor(), elems );
 
@@ -172,14 +173,13 @@ jQuery.fn = jQuery.prototype = {
 	sort: arr.sort,
 	splice: arr.splice
 };
-
+//重点：extend方法
 jQuery.extend = jQuery.fn.extend = function() {
 	var options, name, src, copy, copyIsArray, clone,
 		target = arguments[0] || {},
 		i = 1,
 		length = arguments.length,
 		deep = false;
-
 	// Handle a deep copy situation
 	if ( typeof target === "boolean" ) {
 		deep = target;
@@ -228,6 +228,7 @@ jQuery.extend = jQuery.fn.extend = function() {
 
 				// Don't bring in undefined values
 				} else if ( copy !== undefined ) {
+					//浅复制
 					target[ name ] = copy;
 				}
 			}
@@ -237,7 +238,7 @@ jQuery.extend = jQuery.fn.extend = function() {
 	// Return the modified object
 	return target;
 };
-
+//添加静态方法
 jQuery.extend({
 	// Unique for each copy of jQuery on the page
 	expando: "jQuery" + ( version + Math.random() ).replace( /\D/g, "" ),
@@ -343,17 +344,16 @@ jQuery.extend({
 
 	// args is for internal usage only
 	each: function( obj, callback, args ) {
+        //并没有操作过obj。所以obj是不变的
 		var value,
 			i = 0,
 			length = obj.length,
-			isArray = isArraylike( obj );
-
+			isArray = isArraylike( obj );//类数组的判断$("li")
 		if ( args ) {
 			if ( isArray ) {
 				for ( ; i < length; i++ ) {
-					value = callback.apply( obj[ i ], args );
-
-					if ( value === false ) {
+					value = callback.apply( obj[ i ], args );//apply后面的参数得是个数组
+					if ( value === false ) {//所以在$.each里我们用return false跳出循环
 						break;
 					}
 				}
@@ -3014,7 +3014,7 @@ function createOptions( options ) {
 	return object;
 }
 
-/*
+/*是在jQuery内部使用，如为.ajax，$.Deferred等组件提供基础功能的函数
  * Create a callback list using the following parameters:
  *
  *	options: an optional list of space-separated options that will change how
@@ -5354,11 +5354,13 @@ jQuery.fn.extend({
 				if ( isFunction ) {
 					args[ 0 ] = value.call( this, index, self.html() );
 				}
+                //多参数处理
 				self.domManip( args, callback );
 			});
 		}
 
 		if ( l ) {
+            //生成文档碎片
 			fragment = jQuery.buildFragment( args, this[ 0 ].ownerDocument, false, this );
 			first = fragment.firstChild;
 
