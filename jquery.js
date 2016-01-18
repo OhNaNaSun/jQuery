@@ -2998,14 +2998,17 @@ jQuery.each({
 		return this.pushStack( matched );
 	};
 });
-var rnotwhite = (/\S+/g);
+var rnotwhite = (/\S+/g);//\S:非空白字符，匹配至少一个非空白字符
 
 
 
 // String to Object options format cache
+//用来存储每次调用$.Callbacks()传进来的参数，Object {once memory: Object, memory: Object, test: Object}
 var optionsCache = {};
 
 // Convert String-formatted options into Object-formatted ones and store in cache
+	/*
+	* 这个转换的操作其实是不需要重复的，所以我们可以设计一个缓存池，用来储存重复的操作*/
 function createOptions( options ) {
 	var object = optionsCache[ options ] = {};
 	jQuery.each( options.match( rnotwhite ) || [], function( _, flag ) {
@@ -3014,7 +3017,7 @@ function createOptions( options ) {
 	return object;
 }
 
-/*是在jQuery内部使用，如为.ajax，$.Deferred等组件提供基础功能的函数
+/*是在jQuery内部使用，如为queue，.ajax，$.Deferred等组件提供基础功能的函数
  * Create a callback list using the following parameters:
  *
  *	options: an optional list of space-separated options that will change how
@@ -3057,9 +3060,9 @@ jQuery.Callbacks = function( options ) {
 		// Index of currently firing callback (modified by remove if needed)
 		firingIndex,
 		// Actual callback list
-		list = [],
+		list = [],//通过闭包使这条回调数组保持存在
 		// Stack of fire calls for repeatable lists
-		stack = !options.once && [],
+		stack = !options.once && [],//没有once
 		// Fire callbacks
 		fire = function( data ) {
 			memory = options.memory && data;
@@ -3068,6 +3071,7 @@ jQuery.Callbacks = function( options ) {
 			firingStart = 0;
 			firingLength = list.length;
 			firing = true;
+			console.log(list);
 			for ( ; list && firingIndex < firingLength; firingIndex++ ) {
 				if ( list[ firingIndex ].apply( data[ 0 ], data[ 1 ] ) === false && options.stopOnFalse ) {
 					memory = false; // To prevent further calls using add

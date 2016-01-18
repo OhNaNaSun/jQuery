@@ -11,55 +11,57 @@
 <li></li>
 <li></li>
 <script type="text/javascript">
-    /*function Aaron(List, callback) {
-        setTimeout(function() {
-            var task;
-            if (task = List.shift()) {
-                task(); //执行函数
-            }
-            if (List.length > 0) { //递归分解
-                //callee 是 arguments 对象的属性。在该函数的函数体内，它可以指向当前正在执行的函数。
-                // 当函数是匿名函数时，这是很有用的， 比如匿名函数，这里就是。
-                arguments.callee(List)
-            } else {
-                callback()
-            }
-        }, 25)
+    function fn1(val) {
+        console.log('fn1 says:' + val);
     }
-    Aaron([
-        function() {
-            alert('a')
-        },
-        function() {
-            alert('b')
-        },
-        function() {
-            alert('c')
-        }
-    ], function() {
-        alert('callback')
-    });*/
-    function fn1(List, callback){
-        for(var i = 0; i< List.length; i++){
-            List[i]();
-        }
-        callback();
+
+    function fn2(val) {
+        console.log('fn2 says ' + val);
     }
-    fn1([
-        function() {
-            for(var i = 0; i < 1000; i++){
-                console.log(i);
+    function fn3(val){
+        console.log("fn3 says " + val);
+    }
+    function fn4(val){
+        console.log("fn4 says " + val);
+    }
+    var cbs = $.Callbacks("memory");
+    cbs.add(fn1);
+    cbs.fire('foo');
+    cbs.fire('ba1');
+    cbs.add(fn2);
+
+    /*function callbacks(options){
+        var list = [];
+        var self;
+        self = {
+            add: function(fn){
+                if(list){
+                    list.push(fn);
+                }
+            },
+            fire: function(para){
+                if(list){
+                    list.forEach(function(fn){
+                        fn(para);
+                    });
+                    if(options === "once"){
+                        list = undefined;
+                    }
+                }
             }
-        },
-        function() {
-            console.log('b');
-        },
-        function() {
-            console.log('c');
-        }
-    ],function(){
-        console.log("callback");
-    })
+        };
+        return self;
+    }
+    var cc = callbacks("once");
+    cc.add(fn1);
+    cc.fire("111");
+    cc.add(fn2);
+    cc.fire("222");*/
+   /*memory
+    foo
+    fn2 says: foo
+    bar
+    fn2 says: bar*/
 </script>
 </body>
 </html>
