@@ -6,62 +6,29 @@
     <script src="jquery.js"></script>
 </head>
 <body>
-<div id="aaron">jQuery</div>
-<li></li>
-<li></li>
-<li></li>
+<div id="aaron">Data</div></br>
 <script type="text/javascript">
-    function fn1(val) {
-        console.log('fn1 says:' + val);
-    }
+    var ele1 = $("#aaron");
+    var ele2 = $("#aaron");
 
-    function fn2(val) {
-        console.log('fn2 says ' + val);
-    }
-    function fn3(val){
-        console.log("fn3 says " + val);
-    }
-    function fn4(val){
-        console.log("fn4 says " + val);
-    }
-    var cbs = $.Callbacks("memory");
-    cbs.add(fn1);
-    cbs.fire('foo');
-    cbs.fire('ba1');
-    cbs.add(fn2);
+    /*ele1.data('a',1111);
+    ele2.data('a',2222);*/
+    $.data(ele1, 'a', 1111);
+//    $.data(ele2, 'a', 2222);
+//    show('第一组,通过$().data()的方式,只取到最后一个a值,之前的被覆盖')
+    /*console.log($.data(ele1, 'a'))
+    console.log($.data(ele2, 'a'))*/
 
-    /*function callbacks(options){
-        var list = [];
-        var self;
-        self = {
-            add: function(fn){
-                if(list){
-                    list.push(fn);
-                }
-            },
-            fire: function(para){
-                if(list){
-                    list.forEach(function(fn){
-                        fn(para);
-                    });
-                    if(options === "once"){
-                        list = undefined;
-                    }
-                }
+   /*function Data(){
+        Object.defineProperty(this.cache(), 0, {
+            get: function(){
+                return {};
             }
-        };
-        return self;
+        });
+        this.expando = jQuery.expando + Math.random();
     }
-    var cc = callbacks("once");
-    cc.add(fn1);
-    cc.fire("111");
-    cc.add(fn2);
-    cc.fire("222");*/
-   /*memory
-    foo
-    fn2 says: foo
-    bar
-    fn2 says: bar*/
+    Data.uid = 1;
+    Data.accepts = jQuery.acceptData;*/
 </script>
 </body>
 </html>

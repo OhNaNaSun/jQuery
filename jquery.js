@@ -241,7 +241,7 @@ jQuery.extend = jQuery.fn.extend = function() {
 //添加静态方法
 jQuery.extend({
 	// Unique for each copy of jQuery on the page
-	expando: "jQuery" + ( version + Math.random() ).replace( /\D/g, "" ),
+	expando: "jQuery" + ( version + Math.random() ).replace( /\D/g, "" ),// \D：非数字字符
 
 	// Assume jQuery is ready without the ready module
 	isReady: true,
@@ -3071,7 +3071,6 @@ jQuery.Callbacks = function( options ) {
 			firingStart = 0;
 			firingLength = list.length;
 			firing = true;
-			console.log(list);
 			for ( ; list && firingIndex < firingLength; firingIndex++ ) {
 				if ( list[ firingIndex ].apply( data[ 0 ], data[ 1 ] ) === false && options.stopOnFalse ) {
 					memory = false; // To prevent further calls using add
@@ -3500,15 +3499,15 @@ var access = jQuery.access = function( elems, fn, key, value, chainable, emptyGe
 jQuery.acceptData = function( owner ) {
 	// Accepts only:
 	//  - Node
-	//    - Node.ELEMENT_NODE
-	//    - Node.DOCUMENT_NODE
+	//    - Node.ELEMENT_NODE  ：1
+	//    - Node.DOCUMENT_NODE ：9 ：A Document node.
 	//  - Object
 	//    - Any
 	/* jshint -W018 */
 	return owner.nodeType === 1 || owner.nodeType === 9 || !( +owner.nodeType );
 };
 
-
+//数据缓存
 function Data() {
 	// Support: Android < 4,
 	// Old WebKit does not have Object.preventExtensions/freeze method,
@@ -3518,7 +3517,7 @@ function Data() {
 			return {};
 		}
 	});
-
+	//console.log(this.expando);
 	this.expando = jQuery.expando + Math.random();
 }
 
@@ -3599,10 +3598,11 @@ Data.prototype = {
 			cache : cache[ key ];
 	},
 	access: function( owner, key, value ) {
+		//console.log(owner)
 		var stored;
 		// In cases where either:
 		//
-		//   1. No key was specified
+		//   1. No key was specified 
 		//   2. A string key was specified, but no value provided
 		//
 		// Take the "read" path and allow the get method to determine
