@@ -3039,14 +3039,16 @@ function createOptions( options ) {
  *	stopOnFalse:	interrupt callings when a callback returns false
  *
  */
+/*jQuery.Callbacks和jQuery.extend的区别*/
 jQuery.Callbacks = function( options ) {
+	//工厂模式
+	//整个$.Callbacks的源码很少，它是一个工厂函数，使用函数调用（非new，它不是一个类）创建对象，它有一个可选参数flags用来设置回调函数的行为，对外的接口也就是self的返回。
 
 	// Convert options from String-formatted to Object-formatted if needed
 	// (we check in cache first)
 	options = typeof options === "string" ?
 		( optionsCache[ options ] || createOptions( options ) ) :
 		jQuery.extend( {}, options );
-
 	var // Last fire value (for non-forgettable lists)
 		memory,
 		// Flag to know if list was already fired
@@ -3061,6 +3063,7 @@ jQuery.Callbacks = function( options ) {
 		firingIndex,
 		// Actual callback list
 		list = [],//通过闭包使这条回调数组保持存在
+		//有多少$.Callbacks()就有多少个list
 		// Stack of fire calls for repeatable lists
 		stack = !options.once && [],//没有once
 		// Fire callbacks
@@ -3095,6 +3098,7 @@ jQuery.Callbacks = function( options ) {
 			// Add a callback or a collection of callbacks to the list
 			add: function() {
 				if ( list ) {
+					// First, we save the current length
 					// First, we save the current length
 					var start = list.length;
 					(function add( args ) {
@@ -3205,16 +3209,31 @@ jQuery.Callbacks = function( options ) {
 
 
 jQuery.extend({
+	/*Deferred 在JQuery内部用于promise, Dom ready, ajax, 动画模块*/
+	// jQuery. Deferred主要处理：
+	//     显而易见Deferred是个工厂类，返回的是内部构建的deferred对象
+	//     tuples 创建三个$.Callbacks对象，分别表示成功，失败，处理中三种状态
+	//     创建了一个promise对象，具有state、always、then、primise方法
+	//     扩展primise对象生成最终的Deferred对象，返回该对象
+	//     primise对象就是一个受限对象，只读
 
+	//当jQuery.extend只有一个参数的时候，其实就是对jQuery静态方法的一个扩展。
 	Deferred: function( func ) {
+		//Deferred就是一个简单的工厂方法, var a = $.Deferred（）$.Deferred(function(){})
 		var tuples = [
 				// action, add listener, listener list, final state
+				//三个$.Callbacks对象，分别表示成功，失败，处理中三种状态
+				//1 动作
+				//2 侦听器
+				//3 最终状态
+				//后面的操作将是围绕这些接口处理
 				[ "resolve", "done", jQuery.Callbacks("once memory"), "resolved" ],
 				[ "reject", "fail", jQuery.Callbacks("once memory"), "rejected" ],
 				[ "notify", "progress", jQuery.Callbacks("memory") ]
 			],
 			state = "pending",
 			promise = {
+				//创建了一个promise对象，具有state、always、then、primise方法
 				state: function() {
 					return state;
 				},
@@ -3252,13 +3271,16 @@ jQuery.extend({
 			deferred = {};
 
 		// Keep pipe for back-compat
+		//定义管道风格的接口pipe
 		promise.pipe = promise.then;
 
 		// Add list-specific methods
+		//逐个添加所有的接口到deferred对象上
 		jQuery.each( tuples, function( i, tuple ) {
-			var list = tuple[ 2 ],
-				stateString = tuple[ 3 ];
-
+			//tuple:[ "resolve", "done", jQuery.Callbacks("once memory"), "resolved" ]
+			var list = tuple[ 2 ],//jQuery.Callbacks("once memory")
+				stateString = tuple[ 3 ];//"resolved"
+			//console.log(list);
 			// promise[ done | fail | progress ] = list.add
 			promise[ tuple[1] ] = list.add;
 
@@ -3279,20 +3301,26 @@ jQuery.extend({
 			};
 			deferred[ tuple[0] + "With" ] = list.fireWith;
 		});
-
+		console.log(promise);
 		// Make the deferred a promise
 		promise.promise( deferred );
 
 		// Call given func if any
+		//如果传递的参数是函数，直接运行
 		if ( func ) {
 			func.call( deferred, deferred );
 		}
 
 		// All done!
+		//console.log(deferred);
 		return deferred;
 	},
 
 	// Deferred helper
+	//when就是一个合集的处理
+	//可以收集多个异步操作，合并成功后处理
+	//同时也可以绑定Promise 对象的其它方法，如 defered.then
+	//所以when内部必须要创建一个deferred对象
 	when: function( subordinate /* , ..., subordinateN */ ) {
 		var i = 0,
 			resolveValues = slice.call( arguments ),
@@ -3507,7 +3535,7 @@ jQuery.acceptData = function( owner ) {
 	return owner.nodeType === 1 || owner.nodeType === 9 || !( +owner.nodeType );
 };
 
-//数据缓存
+//缓存系统：jQuery的一个核心基础
 function Data() {
 	// Support: Android < 4,
 	// Old WebKit does not have Object.preventExtensions/freeze method,
@@ -3517,13 +3545,14 @@ function Data() {
 			return {};
 		}
 	});
-	//console.log(this.expando);
 	this.expando = jQuery.expando + Math.random();
 }
 
 Data.uid = 1;
 Data.accepts = jQuery.acceptData;
-
+/*有的时候,我们需要使用一个在调用过程中都保持不变的值，
+使用Function对象的属性比定义全局变量更加方便，
+因为全局变量会使命名空间变的散乱。*/
 Data.prototype = {
 	key: function( owner ) {
 		// We can accept data for non-element nodes in modern browsers,
@@ -3539,13 +3568,12 @@ Data.prototype = {
 
 		// If not, create one
 		if ( !unlock ) {
-			unlock = Data.uid++;
-
+			unlock = Data.uid++;//这个值是一直递增的。全局唯一性
 			// Secure it in a non-enumerable, non-writable property
 			try {
 				descriptor[ this.expando ] = { value: unlock };
 				Object.defineProperties( owner, descriptor );
-
+				//往需要进行缓存的DOM节点上扩展一个值为expando的属性
 			// Support: Android < 4
 			// Fallback to a less secure definition
 			} catch ( e ) {
@@ -3566,13 +3594,12 @@ Data.prototype = {
 			// There may be an unlock assigned to this node,
 			// if there is no entry for this "owner", create one inline
 			// and set the unlock as though an owner entry had always existed
-			unlock = this.key( owner ),
+			unlock = this.key( owner ),//用unlock连接cache和node
 			cache = this.cache[ unlock ];
-
 		// Handle: [ owner, key, value ] args
 		if ( typeof data === "string" ) {
 			cache[ data ] = value;
-
+			//console.log(cache[data]);
 		// Handle: [ owner, { properties } ] args
 		} else {
 			// Fresh assignments by object are shallow copied
@@ -3585,6 +3612,7 @@ Data.prototype = {
 				}
 			}
 		}
+		//console.log(cache);
 		return cache;
 	},
 	get: function( owner, key ) {
@@ -3593,16 +3621,14 @@ Data.prototype = {
 		// allowing direct access to the newly created
 		// empty data object. A valid owner object must be provided.
 		var cache = this.cache[ this.key( owner ) ];
-
 		return key === undefined ?
 			cache : cache[ key ];
 	},
 	access: function( owner, key, value ) {
-		//console.log(owner)
 		var stored;
 		// In cases where either:
 		//
-		//   1. No key was specified 
+		//   1. No key was specified
 		//   2. A string key was specified, but no value provided
 		//
 		// Take the "read" path and allow the get method to determine
@@ -3615,7 +3641,6 @@ Data.prototype = {
 				((key && typeof key === "string") && value === undefined) ) {
 
 			stored = this.get( owner, key );
-
 			return stored !== undefined ?
 				stored : this.get( owner, jQuery.camelCase(key) );
 		}
@@ -3684,8 +3709,21 @@ Data.prototype = {
 var data_priv = new Data();
 
 var data_user = new Data();
-
-
+/*console.log(data_priv.cache);
+console.log(data_user.cache);添加的属性全部放在这里
+ 为了不把数据与dom直接关联，所以会把数据存储到一个cache对象上
+*/
+	/*var cache = {
+		"uid1": { // DOM节点1缓存数据，
+			"name1": value1,
+			"name2": value2
+		},
+		"uid2": { // DOM节点2缓存数据，
+			"name1": value1,
+			"name2": value2
+		}
+		// ......
+	};*/
 
 /*
 	Implementation Summary
@@ -3796,7 +3834,6 @@ jQuery.fn.extend({
 		return access( this, function( value ) {
 			var data,
 				camelKey = jQuery.camelCase( key );
-
 			// The calling jQuery object (element matches) is not empty
 			// (and therefore has an element appears at this[ 0 ]) and the
 			// `value` parameter was not undefined. An empty jQuery object
@@ -3855,7 +3892,7 @@ jQuery.fn.extend({
 		});
 	}
 });
-
+/*数据缓存系统结束*/
 
 jQuery.extend({
 	queue: function( elem, type, data ) {

@@ -2,33 +2,116 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>jQuery</title>
+    <title>Deferred</title>
     <script src="jquery.js"></script>
 </head>
 <body>
-<div id="aaron">Data</div></br>
+<button id="go">run</button>
+<div id="aaron1">运行案例一</div>
+<div id="aaron2">运行案例二</div>
+<div id="aaron3">例子三：基本用法</div>
+<div id="aaron4">例子四：过滤器</div>
+<div id="aaron5">例子五：promise方法</div>
 <script type="text/javascript">
-    var ele1 = $("#aaron");
-    var ele2 = $("#aaron");
-
-    /*ele1.data('a',1111);
-    ele2.data('a',2222);*/
-    $.data(ele1, 'a', 1111);
-//    $.data(ele2, 'a', 2222);
-//    show('第一组,通过$().data()的方式,只取到最后一个a值,之前的被覆盖')
-    /*console.log($.data(ele1, 'a'))
-    console.log($.data(ele2, 'a'))*/
-
-   /*function Data(){
-        Object.defineProperty(this.cache(), 0, {
-            get: function(){
-                return {};
-            }
-        });
-        this.expando = jQuery.expando + Math.random();
+    //案例一：没有使用Deferred
+    function show(data, ele) {
+        (ele || $("body")).append('<li>' + data + '</li>')
     }
-    Data.uid = 1;
-    Data.accepts = jQuery.acceptData;*/
+    function task1(name, fn){
+        setTimeout(function(){
+            fn(name)
+        }, 500)
+    }
+    function task2(name, fn){
+        setTimeout(function(){
+            fn(name)
+        }, 1000)
+    }
+    var taskNuns = function(){
+        var num = 2;
+        return function() {//使用闭包保留了num;
+            if (num === 1) {
+                show("任务都完成了", $("#aaron1"))
+            }
+            num--;
+        }
+    }()
+    $("#aaron1").click(function(){
+        //
+        task1('任务一', function(name){
+            //点击并且500ms后
+            console.log(name);
+            show("task1", $("#aaron1"));
+            taskNuns();
+        })
+        task2('任务二', function(name){
+            //点击并且500ms后
+            console.log(name);
+            show("task2", $("#aaron1"));
+            taskNuns();
+        })
+    })
+    //案例二：Deferred
+    function task3(name){
+        var dtd = $.Deferred();
+        setTimeout(function(){
+            show("task3执行完毕", $("#aaron2"))
+            dtd.resolve(name)
+        },500);
+        return dtd;
+    }
+    function task4(name){
+        var dtd = $.Deferred();
+        setTimeout(function(){
+            show("task4执行完毕", $("#aaron2"))
+            dtd.resolve(name)
+        },1000);
+        return dtd;
+    }
+    $("#aaron2").click(function(){
+        $.when(task3("task1"), task4("task2")).done(function(){
+            show('when处理成功', $("#aaron2"))
+        })
+    })
+    $("#aaron3").click(function(){
+        //构建一个deferred对象
+        var dtd = $.Deferred();
+
+        dtd.done(function(){
+            //给deferred注册一个成功后的回调通知
+            console.log(111);
+        })
+        setTimeout(function(){
+            dtd.resolve();//改变deferred对象的执行状态
+        },1000)
+    })
+    //例二：过滤器
+    var filterResolve = function(){
+        var defer = $.Deferred(),
+                filterd = defer.then(function(value){
+                    return value*2;
+                });
+        defer.resolve(5);
+        filterd.done(function(value){
+            show('value is (2*5 = ) 10:' + value)
+        })
+    }
+    $("#aaron4").click(filterResolve);
+
+    function promisefn(){
+        var obj = {hello: function(name){
+                show('你好，' + name)
+            }},
+                defer = $.Deferred();
+        //设置一个promise
+        defer.promise(obj);
+        //解决一个deferred
+        defer.resolve("mooc");
+        obj.done(function(name){
+            obj.hello(name)
+        }).hello("abc")
+    }
+    $("#aaron5").click(promisefn);
 </script>
 </body>
 </html>
